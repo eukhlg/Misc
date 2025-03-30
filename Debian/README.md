@@ -13,14 +13,15 @@ Gnome customization
 
 ### Fractional Scaling and HiDPI
 
-1.  Enable QT apps auto scaling via setting environment variables  
-      
+1.  Enable QT apps auto scaling via setting environment variables
+
+```
+sudo nano /etc/security/pam_env.conf
+QT_AUTO_SCREEN_SCALE_FACTOR=1
+QT_ENABLE_HIGHDPI_SCALING=1
+```
     
-        sudo nano /etc/security/pam_env.conf
-        QT_AUTO_SCREEN_SCALE_FACTOR=1
-        QT_ENABLE_HIGHDPI_SCALING=1
-    
-2.  Enable Wayland HiDPI support for all users  
+3.  Enable Wayland HiDPI support for all users  
       
     
         # This is if GDM settings app is present are 
@@ -31,7 +32,7 @@ Gnome customization
         # In Fedora this trick has helped
         sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
     
-3.  Enable HiDPI for X11  
+4.  Enable HiDPI for X11  
       
     
         gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
@@ -46,7 +47,7 @@ Gnome customization
         Exec=xrandr --output eDP --scale 1.25x1.25
         
     
-4.  Flatpak  
+5.  Flatpak  
       
     
         STEAM_FORCE_DESKTOPUI_SCALING=1.5
