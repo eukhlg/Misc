@@ -15,11 +15,11 @@ Gnome customization
 
 1.  Enable QT apps auto scaling via setting environment variables
 
-```
-sudo nano /etc/security/pam_env.conf
-QT_AUTO_SCREEN_SCALE_FACTOR=1
-QT_ENABLE_HIGHDPI_SCALING=1
-```
+
+        sudo nano /etc/security/pam_env.conf
+        QT_AUTO_SCREEN_SCALE_FACTOR=1
+        QT_ENABLE_HIGHDPI_SCALING=1
+
     
 3.  Enable Wayland HiDPI support for all users  
       
