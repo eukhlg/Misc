@@ -81,7 +81,38 @@ apt install nvidia-driver firmware-misc-nonfree
 DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms package.
 
 > Note about Secureboot : if you have SecureBoot enabled, you need to sign the resulting modules. Detailed instructions are available here.
+
+### Linux / macOS <i class="mdi mdi-ubuntu"></i>
+
+> The commands below assume an installation within a subfolder named `wiki`.
 {.is-info}
+
+1) Stop the running Wiki.js instance
+2) Make a backup of your `config.yml` file.
+  ```bash
+  cp wiki/config.yml ~/config.yml.bak
+  ```
+3) Delete the application folder.
+  ```bash
+  rm -rf wiki/*
+  ```
+4) Download the latest version of Wiki.js.
+  ```bash
+  wget https://github.com/Requarks/wiki/releases/latest/download/wiki-js.tar.gz
+  ```
+5) Extract the package
+  ```bash
+  tar xzf wiki-js.tar.gz -C ./wiki
+  cd wiki
+  ```
+6) Restore your config.yml back to its original location.
+  ```bash
+  cp ~/config.yml.bak ./config.yml
+  ```
+7) Start Wiki.js
+  ```bash
+  node server
+  ```
 
 ### NVIDIA Driver (Offical Download)  
 
