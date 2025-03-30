@@ -23,38 +23,40 @@ QT_ENABLE_HIGHDPI_SCALING=1
     
 3.  Enable Wayland HiDPI support for all users  
       
-    
-        # This is if GDM settings app is present are 
-        sudo touch /etc/dconf/db/gdm.d/00-hidpi
-        sudo vi 00-hidpi
-        [org/gnome/mutter]
-        experimental-features=['scale-monitor-framebuffer']
-        # In Fedora this trick has helped
-        sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
+```    
+# This is if GDM settings app is present are 
+sudo touch /etc/dconf/db/gdm.d/00-hidpi
+sudo vi 00-hidpi
+[org/gnome/mutter]
+experimental-features=['scale-monitor-framebuffer']
+# In Fedora this trick has helped
+sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
+```
     
 4.  Enable HiDPI for X11  
+
+```
+gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
+vi ~/.config/autostart/xrandr-settings.desktop
+
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=custom xrandr settings
+
+# Replace with your own xrandr command:
+Exec=xrandr --output eDP --scale 1.25x1.25
+```
+        
+    
+4.  Flatpak  
       
-    
-        gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
-        vi ~/.config/autostart/xrandr-settings.desktop
-        
-        [Desktop Entry]
-        Type=Application
-        Version=1.0
-        Name=custom xrandr settings
-        
-        # Replace with your own xrandr command:
-        Exec=xrandr --output eDP --scale 1.25x1.25
-        
-    
-5.  Flatpak  
-      
-    
-        STEAM_FORCE_DESKTOPUI_SCALING=1.5
-        GDK_SCALE=1.5
-        ELM_SCALE=1.5
-        QT_SCALE_FACTOR=2
-    
+```    
+STEAM_FORCE_DESKTOPUI_SCALING=1.5
+GDK_SCALE=1.5
+ELM_SCALE=1.5
+QT_SCALE_FACTOR=2
+```
 
 Drivers installation
 --------------------
@@ -63,58 +65,65 @@ Drivers installation
 
 Add "contrib", "non-free" and "non-free-firmware" components to /etc/apt/sources.list, for example:
 
-    # Debian Bookworm
-    deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
+# Debian Bookworm
+deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
 
 Update the list of available packages, then we can install the nvidia-driver package, plus the necessary firmware:
 
-    apt update
-    apt install nvidia-driver firmware-misc-nonfree
+```
+apt update
+apt install nvidia-driver firmware-misc-nonfree
+```
 
-DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms package.
+> DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms package.
 
   
-
-Note about Secureboot : if you have SecureBoot enabled, you need to sign the resulting modules. Detailed instructions are available here. 
+> Note about Secureboot : if you have SecureBoot enabled, you need to sign the resulting modules. Detailed instructions are available here. 
 
 ### NVIDIA Driver (Offical Download)  
 
-Download driver from here [https://download.nvidia.com/XFree86/Linux-x86_64/](https://download.nvidia.com/XFree86/Linux-x86_64/)
-
+1. Download driver from here [https://download.nvidia.com/XFree86/Linux-x86_64/](https://download.nvidia.com/XFree86/Linux-x86_64/)
 The latest stable version can be found here [https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/](https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/)
 
-    apt autoremove $(dpkg -l nvidia-drivers* | grep ii |awk '{print $2}')
-    apt install linux-headers-$(uname -r) gcc make acpid dkms libglvnd-core-dev libglvnd0 libglvnd-dev dracut
-    touch /etc/modprobe.d/blacklist.conf
-    echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
-    GRUB_CMDLINE_LINUX_DEFAULT="quiet rd.driver.blacklist=nouveau"
-    update-grub
-    dracut -q /boot/initrd.img-$(uname -r) $(uname -r) --force
-    systemctl set-default multi-user.target
-    
-    # Rebbot and run installer in console
-    # Do not create X11 config this causes issues on GDM boot
-    systemctl set-default graphical.target
-    
-    # After reboot
-    apt install xwayland libxcb1 libnvidia-egl-wayland1
+```
+apt autoremove $(dpkg -l nvidia-drivers* | grep ii |awk '{print $2}')
+apt install linux-headers-$(uname -r) gcc make acpid dkms libglvnd-core-dev libglvnd0 libglvnd-dev dracut
+touch /etc/modprobe.d/blacklist.conf
+echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
+GRUB_CMDLINE_LINUX_DEFAULT="quiet rd.driver.blacklist=nouveau"
+update-grub
+dracut -q /boot/initrd.img-$(uname -r) $(uname -r) --force
+systemctl set-default multi-user.target
+
+# Rebbot and run installer in console
+# Do not create X11 config this causes issues on GDM boot
+systemctl set-default graphical.target
+
+# After reboot
+apt install xwayland libxcb1 libnvidia-egl-wayland1
+```
 
 #### Prime-run
 
 1.  Make sure the NVIDIA drivers are installed and reboot if you just installed them.
 2.  Open a terminal and type: nano prime-run
 3.  Copy and paste this script into nano, then save and quit nano:  
-    
-        #!/bin/bash
-        __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia "$@"
-    
+
+```
+#!/bin/bash
+__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia "$@"
+```
       
     
-4.  In terminal type:  
-    
-        $ sudo mv prime-run /bin
-        $ cd /bin
-        $ sudo chmod 755 prime-run
+4.  In terminal type:
+   
+```
+sudo mv prime-run /bin
+cd /bin
+sudo chmod 755 prime-run
+```
     
 5.  Test it by typing `prime-run glxinfo | grep "OpenGL renderer"`
 
@@ -123,39 +132,45 @@ Issues
 
 ### AMDGPU issue on DMESG
 
-    [    2.123808] amdgpu 0000:66:00.0: amdgpu: Fetched VBIOS from VFCT
-    [    2.123809] amdgpu: ATOM BIOS: 113-PHXGENERIC-001
-    [    2.123814] [drm] VCN(0) encode/decode are enabled in VM mode
-    [    2.123815] amdgpu 0000:66:00.0: [drm:jpeg_v4_0_early_init [amdgpu]] JPEG decode is enabled in VM mode
-    [    2.123967] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
-    [    2.124013] firmware_class: See https://wiki.debian.org/Firmware for information about missing firmware
-    [    2.124045] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
-    [    2.124073] amdgpu 0000:66:00.0: Direct firmware load for amdgpu/gc_11_0_1_mes_2.bin failed with error -2
-    [    2.124074] [drm] try to fall back to amdgpu/gc_11_0_1_mes.bin
-    [    2.124115] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes.bin
-    [    2.124148] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes1.bin
+```
+[    2.123808] amdgpu 0000:66:00.0: amdgpu: Fetched VBIOS from VFCT
+[    2.123809] amdgpu: ATOM BIOS: 113-PHXGENERIC-001
+[    2.123814] [drm] VCN(0) encode/decode are enabled in VM mode
+[    2.123815] amdgpu 0000:66:00.0: [drm:jpeg_v4_0_early_init [amdgpu]] JPEG decode is enabled in VM mode
+[    2.123967] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
+[    2.124013] firmware_class: See https://wiki.debian.org/Firmware for information about missing firmware
+[    2.124045] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
+[    2.124073] amdgpu 0000:66:00.0: Direct firmware load for amdgpu/gc_11_0_1_mes_2.bin failed with error -2
+[    2.124074] [drm] try to fall back to amdgpu/gc_11_0_1_mes.bin
+[    2.124115] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes.bin
+[    2.124148] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes1.bin
+```
 
 Solution is here [https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see](https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see)
 
-    cd /tmp
-    git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
-    cd linux-firmware
-    sudo cp -a --no-preserve=ownership amdgpu /lib/firmware
-    sudo update-initramfs -u #or sudo update-initramfs -k all -u -v
+```
+cd /tmp
+git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
+cd linux-firmware
+sudo cp -a --no-preserve=ownership amdgpu /lib/firmware
+sudo update-initramfs -u #or sudo update-initramfs -k all -u -v
+```
 
 ### Wayland not available in GDM after installing Nvidia drivers in Debian 12
 
 #### Option 1
 
-    nano /usr/lib/udev/rules.d/61-gdm.rules
-    
-    #just commented the last two lines here:
-    LABEL="gdm_prefer_xorg"
-    #RUN+="/usr/lib/gdm-runtime-config set daemon PreferredDisplayServer xorg"
-    GOTO="gdm_end"
-    LABEL="gdm_disable_wayland"
-    #RUN+="/usr/lib/gdm-runtime-config set daemon WaylandEnable false"
-    GOTO="gdm_end" 
+```
+nano /usr/lib/udev/rules.d/61-gdm.rules
+
+#just commented the last two lines here:
+LABEL="gdm_prefer_xorg"
+#RUN+="/usr/lib/gdm-runtime-config set daemon PreferredDisplayServer xorg"
+GOTO="gdm_end"
+LABEL="gdm_disable_wayland"
+#RUN+="/usr/lib/gdm-runtime-config set daemon WaylandEnable false"
+GOTO="gdm_end"
+```
 
 #### Option 2
 
@@ -163,9 +178,11 @@ On GNOME desktops, although a proper version of the NVIDIA driver is used, the g
 
 To enable kernel mode-setting with the NVIDIA driver:
 
-    touch /etc/default/grub.d/nvidia-modeset.cfg
-    echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg
-    update-grub
+```
+touch /etc/default/grub.d/nvidia-modeset.cfg
+echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg
+update-grub
+```
 
 To install the hibernate/suspend/resume helper scripts:
 
@@ -175,35 +192,44 @@ To install the hibernate/suspend/resume helper scripts:
     
 3.  Download the .run file and execute it using bash, with the --extract-only flag. This will extract the files we require into a directory with the same name as the .run file.
     
-    \# bash NVIDIA-Linux-x86_64-525.147.05.run --extract-only
+```bash
+NVIDIA-Linux-x86_64-525.147.05.run --extract-only
+```
     
 4.  Run the following commands to install the extracted scripts:
-    
-    TMPL_PATH=/path/to/the/extracted/directory/systemd
-    sudo install --mode 644 "${TMPL_PATH}/system/nvidia-suspend.service" /etc/systemd/system
-    sudo install --mode 644 "${TMPL_PATH}/system/nvidia-hibernate.service" /etc/systemd/system
-    sudo install --mode 644 "${TMPL_PATH}/system/nvidia-resume.service" /etc/systemd/system
-    sudo install "${TMPL_PATH}/system-sleep/nvidia" /lib/systemd/system-sleep
-    sudo install "${TMPL_PATH}/nvidia-sleep.sh" /usr/bin
-    sudo systemctl enable nvidia-suspend.service
-    sudo systemctl enable nvidia-hibernate.service
-    sudo systemctl enable nvidia-resume.service
-    
 
+```
+TMPL_PATH=/path/to/the/extracted/directory/systemd
+sudo install --mode 644 "${TMPL_PATH}/system/nvidia-suspend.service" /etc/systemd/system
+sudo install --mode 644 "${TMPL_PATH}/system/nvidia-hibernate.service" /etc/systemd/system
+sudo install --mode 644 "${TMPL_PATH}/system/nvidia-resume.service" /etc/systemd/system
+sudo install "${TMPL_PATH}/system-sleep/nvidia" /lib/systemd/system-sleep
+sudo install "${TMPL_PATH}/nvidia-sleep.sh" /usr/bin
+sudo systemctl enable nvidia-suspend.service
+sudo systemctl enable nvidia-hibernate.service
+sudo systemctl enable nvidia-resume.service
+```
+    
 In addition, you will need to verify whether the PreserveVideoMemoryAllocations NVIDIA module parameter is turned on. Without the parameter being enabled, the udev rules in /usr/lib/udev/rules.d/61-gdm.rules will force a fallback to X11. To check the value of PreserveVideoMemoryAllocations:
 
-    cat /proc/driver/nvidia/params | grep PreserveVideoMemoryAllocations
-    PreserveVideoMemoryAllocations: 1
+```
+cat /proc/driver/nvidia/params | grep PreserveVideoMemoryAllocations
+PreserveVideoMemoryAllocations: 1
+```
 
 If this parameter is set to zero, you should be able to override it by adding a configuration into modprobe.d (assuming the file doesn't already exist):
 
-    echo 'options nvidia NVreg_PreserveVideoMemoryAllocations=1' > /etc/modprobe.d/nvidia-power-management.conf
+```
+echo 'options nvidia NVreg_PreserveVideoMemoryAllocations=1' > /etc/modprobe.d/nvidia-power-management.conf
+```
 
 If after reboot it was still not working, force-enable Wayland, by overriding some udev rules  
 
 Looks like this is almost like option 1, not sure this is good solution
 
-    ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
+```
+ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
+```
 
 Software
 --------
@@ -211,24 +237,24 @@ Software
 1.  Remove Debian's Mozila ESR
 2.  Remove Libre Office  
       
-    
-        sudo apt remove libreoffice-common libreoffice-core libreoffice-gnome libreoffice-gtk3 libreoffice-help-common libreoffice-help-en-us libreoffice-style-colibre libreoffice-style-elementary
+```
+sudo apt remove libreoffice-common libreoffice-core libreoffice-gnome libreoffice-gtk3 libreoffice-help-common libreoffice-help-en-us libreoffice-style-colibre libreoffice-style-elementary
+```
     
 3.  Remove Games
 4.  Install ones from FlatHub  
     
-
 ### Chromium Wayland Support  
 
-To enable Wayland support change the following option within `chrome://flags/`
-
-    Preferred Ozone platform = Wayland
+To enable Wayland support change the following option within `chrome://flags/` to `Preferred Ozone platform = Wayland`
 
 ### Multimedia codecs
 
 Install codecs pack and VLC  
 
-    sudo apt install libavcodec-extra vlc
+```
+sudo apt install libavcodec-extra vlc
+```
 
 ### VMWare Player installation
 
