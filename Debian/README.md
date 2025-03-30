@@ -208,30 +208,27 @@ sudo install "${TMPL_PATH}/nvidia-sleep.sh" /usr/bin
 sudo systemctl enable nvidia-suspend.service
 sudo systemctl enable nvidia-hibernate.service
 sudo systemctl enable nvidia-resume.service
+```
 
+> In addition, you will need to verify whether the PreserveVideoMemoryAllocations NVIDIA module parameter is turned on. Without the parameter being > enabled, the udev rules in /usr/lib/udev/rules.d/61-gdm.rules will force a fallback to X11. To check the value of PreserveVideoMemoryAllocations:
+> ```
+> cat /proc/driver/nvidia/params | grep PreserveVideoMemoryAllocations
+> PreserveVideoMemoryAllocations: 1
+> ```
 >
-```
-In addition, you will need to verify whether the PreserveVideoMemoryAllocations NVIDIA module parameter is turned on. Without the parameter being enabled, the udev rules in /usr/lib/udev/rules.d/61-gdm.rules will force a fallback to X11. To check the value of PreserveVideoMemoryAllocations:
->
-```
-cat /proc/driver/nvidia/params | grep PreserveVideoMemoryAllocations
-PreserveVideoMemoryAllocations: 1
-```
->
-
-If this parameter is set to zero, you should be able to override it by adding a configuration into modprobe.d (assuming the file doesn't already exist):
-
-```
-echo 'options nvidia NVreg_PreserveVideoMemoryAllocations=1' > /etc/modprobe.d/nvidia-power-management.conf
-```
-
-If after reboot it was still not working, force-enable Wayland, by overriding some udev rules  
-
-Looks like this is almost like option 1, not sure this is good solution
-
-```
-ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
-```
+> If this parameter is set to zero, you should be able to override it by adding a configuration into modprobe.d (assuming the file doesn't already > exist):
+> 
+> ```
+> echo 'options nvidia NVreg_PreserveVideoMemoryAllocations=1' > /etc/modprobe.d/nvidia-power-management.conf
+> ```
+> 
+> If after reboot it was still not working, force-enable Wayland, by overriding some udev rules  
+> 
+> Looks like this is almost like option 1, not sure this is good solution
+> 
+> ```
+> ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
+> ```
 
 Software
 --------
