@@ -22,7 +22,7 @@ QT_ENABLE_HIGHDPI_SCALING=1
 ```
 
     
-3.  Enable Wayland HiDPI support for all users  
+2.  Enable Wayland HiDPI support for all users  
       
 ```    
 # This is if GDM settings app is present are 
@@ -34,7 +34,7 @@ experimental-features=['scale-monitor-framebuffer']
 sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
 ```
     
-4.  Enable HiDPI for X11  
+3.  Enable HiDPI for X11  
 
 ```
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
