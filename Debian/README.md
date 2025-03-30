@@ -1,5 +1,4 @@
-Gnome customization
--------------------
+## Gnome customization
 
 1.  Install Extension Manager
 2.  Install **Blur my Shell, Dash to Dock, User Themes** (if not installed)
@@ -16,59 +15,69 @@ Gnome customization
 1.  Enable QT apps auto scaling via setting environment variables  
       
     
-        sudo nano /etc/security/pam_env.conf
-        QT_AUTO_SCREEN_SCALE_FACTOR=1
-        QT_ENABLE_HIGHDPI_SCALING=1
+    ```
+    sudo nano /etc/security/pam_env.conf
+    QT_AUTO_SCREEN_SCALE_FACTOR=1
+    QT_ENABLE_HIGHDPI_SCALING=1
+    ```
     
 2.  Enable Wayland HiDPI support for all users  
       
     
-        # This is if GDM settings app is present are 
-        sudo touch /etc/dconf/db/gdm.d/00-hidpi
-        sudo vi 00-hidpi
-        [org/gnome/mutter]
-        experimental-features=['scale-monitor-framebuffer']
-        # In Fedora this trick has helped
-        sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
+    ```
+    # This is if GDM settings app is present are 
+    sudo touch /etc/dconf/db/gdm.d/00-hidpi
+    sudo vi 00-hidpi
+    [org/gnome/mutter]
+    experimental-features=['scale-monitor-framebuffer']
+    # In Fedora this trick has helped
+    sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['scale-monitor-framebuffer']"
+    ```
     
 3.  Enable HiDPI for X11  
       
     
-        gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
-        vi ~/.config/autostart/xrandr-settings.desktop
-        
-        [Desktop Entry]
-        Type=Application
-        Version=1.0
-        Name=custom xrandr settings
-        
-        # Replace with your own xrandr command:
-        Exec=xrandr --output eDP --scale 1.25x1.25
-        
+    ```
+    gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
+    vi ~/.config/autostart/xrandr-settings.desktop
+    
+    [Desktop Entry]
+    Type=Application
+    Version=1.0
+    Name=custom xrandr settings
+    
+    # Replace with your own xrandr command:
+    Exec=xrandr --output eDP --scale 1.25x1.25
+    ```
     
 4.  Flatpak  
       
     
-        STEAM_FORCE_DESKTOPUI_SCALING=1.5
-        GDK_SCALE=1.5
-        ELM_SCALE=1.5
-        QT_SCALE_FACTOR=2
+    ```
+    STEAM_FORCE_DESKTOPUI_SCALING=1.5
+    GDK_SCALE=1.5
+    ELM_SCALE=1.5
+    QT_SCALE_FACTOR=2
+    ```
     
 
-Drivers installation
---------------------
+## Drivers installation
 
 ### NVIDIA Driver (debian repository)
 
 Add "contrib", "non-free" and "non-free-firmware" components to /etc/apt/sources.list, for example:
 
-    # Debian Bookworm
-    deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
+# Debian Bookworm
+deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+```
 
 Update the list of available packages, then we can install the nvidia-driver package, plus the necessary firmware:
 
-    # apt update
-    # apt install nvidia-driver firmware-misc-nonfree
+```
+# apt update
+# apt install nvidia-driver firmware-misc-nonfree
+```
 
 DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms package.
 
@@ -82,20 +91,22 @@ Download driver from here [https://download.nvidia.com/XFree86/Linux-x86\_64/](h
 
 The latest stable version can be found here [https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/](https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/)
 
-    apt autoremove $(dpkg -l nvidia-drivers* | grep ii |awk '{print $2}')
-    apt install linux-headers-$(uname -r) gcc make acpid dkms libglvnd-core-dev libglvnd0 libglvnd-dev dracut
-    touch /etc/modprobe.d/blacklist.conf
-    echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
-    GRUB_CMDLINE_LINUX_DEFAULT="quiet rd.driver.blacklist=nouveau"
-    update-grub
-    dracut -q /boot/initrd.img-$(uname -r) $(uname -r) --force
-    systemctl set-default multi-user.target
-    # Rebbot and run installer in console
-    # Do not create X11 config this causes issues on GDM boot
-    systemctl set-default graphical.target
-    
-    # After reboot
-    apt install xwayland libxcb1 libnvidia-egl-wayland1
+```
+apt autoremove $(dpkg -l nvidia-drivers* | grep ii |awk '{print $2}')
+apt install linux-headers-$(uname -r) gcc make acpid dkms libglvnd-core-dev libglvnd0 libglvnd-dev dracut
+touch /etc/modprobe.d/blacklist.conf
+echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf
+GRUB_CMDLINE_LINUX_DEFAULT="quiet rd.driver.blacklist=nouveau"
+update-grub
+dracut -q /boot/initrd.img-$(uname -r) $(uname -r) --force
+systemctl set-default multi-user.target
+# Rebbot and run installer in console
+# Do not create X11 config this causes issues on GDM boot
+systemctl set-default graphical.target
+
+# After reboot
+apt install xwayland libxcb1 libnvidia-egl-wayland1
+```
 
 #### Prime-run
 
@@ -103,57 +114,66 @@ The latest stable version can be found here [https://www.nvidia.com/Download/dri
 2.  Open a terminal and type: nano prime-run
 3.  Copy and paste this script into nano, then save and quit nano:  
     
-        #!/bin/bash
-        __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia "$@"
+    ```
+    #!/bin/bash
+    __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia "$@"
+    ```
     
       
     
 4.  In terminal type:  
     
-        $ sudo mv prime-run /bin
-        $ cd /bin
-        $ sudo chmod 755 prime-run
+    ```
+    $ sudo mv prime-run /bin
+    $ cd /bin
+    $ sudo chmod 755 prime-run
+    ```
     
 5.  Test it by typing `prime-run glxinfo | grep "OpenGL renderer"`
 
-Issues
-------
+## Issues
 
 ### AMDGPU issue on DMESG
 
-    [    2.123808] amdgpu 0000:66:00.0: amdgpu: Fetched VBIOS from VFCT
-    [    2.123809] amdgpu: ATOM BIOS: 113-PHXGENERIC-001
-    [    2.123814] [drm] VCN(0) encode/decode are enabled in VM mode
-    [    2.123815] amdgpu 0000:66:00.0: [drm:jpeg_v4_0_early_init [amdgpu]] JPEG decode is enabled in VM mode
-    [    2.123967] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
-    [    2.124013] firmware_class: See https://wiki.debian.org/Firmware for information about missing firmware
-    [    2.124045] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
-    [    2.124073] amdgpu 0000:66:00.0: Direct firmware load for amdgpu/gc_11_0_1_mes_2.bin failed with error -2
-    [    2.124074] [drm] try to fall back to amdgpu/gc_11_0_1_mes.bin
-    [    2.124115] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes.bin
-    [    2.124148] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes1.bin
+```
+[    2.123808] amdgpu 0000:66:00.0: amdgpu: Fetched VBIOS from VFCT
+[    2.123809] amdgpu: ATOM BIOS: 113-PHXGENERIC-001
+[    2.123814] [drm] VCN(0) encode/decode are enabled in VM mode
+[    2.123815] amdgpu 0000:66:00.0: [drm:jpeg_v4_0_early_init [amdgpu]] JPEG decode is enabled in VM mode
+[    2.123967] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
+[    2.124013] firmware_class: See https://wiki.debian.org/Firmware for information about missing firmware
+[    2.124045] amdgpu 0000:66:00.0: firmware: failed to load amdgpu/gc_11_0_1_mes_2.bin (-2)
+[    2.124073] amdgpu 0000:66:00.0: Direct firmware load for amdgpu/gc_11_0_1_mes_2.bin failed with error -2
+[    2.124074] [drm] try to fall back to amdgpu/gc_11_0_1_mes.bin
+[    2.124115] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes.bin
+[    2.124148] amdgpu 0000:66:00.0: firmware: direct-loading firmware amdgpu/gc_11_0_1_mes1.bin
+```
 
 Solution is here [https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see](https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see)
 
-    cd /tmp
-    git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
-    cd linux-firmware
-    sudo cp -a --no-preserve=ownership amdgpu /lib/firmware
-    sudo update-initramfs -u #or sudo update-initramfs -k all -u -v
+```
+cd /tmp
+git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
+cd linux-firmware
+sudo cp -a --no-preserve=ownership amdgpu /lib/firmware
+sudo update-initramfs -u #or sudo update-initramfs -k all -u -v
+```
 
 ### Wayland not available in GDM after installing Nvidia drivers in Debian 12
 
 #### Option 1
 
-    nano /usr/lib/udev/rules.d/61-gdm.rules
-    
-    #just commented the last two lines here:
-    LABEL="gdm_prefer_xorg"
-    #RUN+="/usr/lib/gdm-runtime-config set daemon PreferredDisplayServer xorg"
-    GOTO="gdm_end"
-    LABEL="gdm_disable_wayland"
-    #RUN+="/usr/lib/gdm-runtime-config set daemon WaylandEnable false"
-    GOTO="gdm_end" 
+```
+nano /usr/lib/udev/rules.d/61-gdm.rules
+
+#just commented the last two lines here:
+LABEL="gdm_prefer_xorg"
+#RUN+="/usr/lib/gdm-runtime-config set daemon PreferredDisplayServer xorg"
+GOTO="gdm_end"
+LABEL="gdm_disable_wayland"
+#RUN+="/usr/lib/gdm-runtime-config set daemon WaylandEnable false"
+GOTO="gdm_end" 
+```
 
 #### Option 2
 
@@ -161,9 +181,11 @@ On GNOME desktops, although a proper version of the NVIDIA driver is used, the g
 
 To enable kernel mode-setting with the NVIDIA driver:
 
-    touch /etc/default/grub.d/nvidia-modeset.cfg
-    echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg
-    update-grub
+```
+touch /etc/default/grub.d/nvidia-modeset.cfg
+echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg
+update-grub
+```
 
 To install the hibernate/suspend/resume helper scripts:
 
@@ -201,16 +223,19 @@ If after reboot it was still not working, force-enable Wayland, by overriding so
 
 Looks like this is almost like option 1, not sure this is good solution
 
-    ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
+```
+ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
+```
 
-Software
---------
+## Software
 
 1.  Remove Debian's Mozila ESR
 2.  Remove Libre Office  
       
     
-        sudo apt remove libreoffice-common libreoffice-core libreoffice-gnome libreoffice-gtk3 libreoffice-help-common libreoffice-help-en-us libreoffice-style-colibre libreoffice-style-elementary
+    ```
+    sudo apt remove libreoffice-common libreoffice-core libreoffice-gnome libreoffice-gtk3 libreoffice-help-common libreoffice-help-en-us libreoffice-style-colibre libreoffice-style-elementary
+    ```
     
 3.  Remove Games
 4.  Install ones from FlatHub  
@@ -220,30 +245,34 @@ Software
 
 To enable Wayland support change the following option within `chrome://flags/`
 
-Preferred Ozone platform = Wayland
-----------------------------------
+## Preferred Ozone platform = Wayland
 
 ### Multimedia codecs
 
 Install codecs pack and VLC  
 
-    sudo apt install libavcodec-extra vlc
+```
+sudo apt install libavcodec-extra vlc
+```
 
 ### VMWare Player installation
 
-    apt install gcc
-    apt-get install gcc
-    apt-get install gcc
-    apt-get install make
-    apt install dwarves
-    apt-get update
-    ln -sf /usr/lib/modules/$(uname -r)/vmlinux.xz /boot/
-    cp /sys/kernel/btf/vmlinux /usr/lib/modules/`uname -r`/build/
-    sudo vmware-modconfig --console --install-all
+```
+apt install gcc
+apt-get install gcc
+apt-get install gcc
+apt-get install make
+apt install dwarves
+apt-get update
+ln -sf /usr/lib/modules/$(uname -r)/vmlinux.xz /boot/
+cp /sys/kernel/btf/vmlinux /usr/lib/modules/`uname -r`/build/
+sudo vmware-modconfig --console --install-all
+```
 
 ### References
 
 1.  [https://www.youtube.com/watch?v=dzyfSSPGOfM](https://www.youtube.com/watch?v=dzyfSSPGOfM)  
+    
 2.  [(3) Debian 12 - The First 12 Things You Should Do After Installation! - YouTube](https://www.youtube.com/watch?v=K72XJHurdUY&t=33s)
 3.  [https://wiki.debian.org/NvidiaGraphicsDrivers?action=show&redirect=NVIDIA#Debian\_12\_.22Bookworm.22](https://wiki.debian.org/NvidiaGraphicsDrivers?action=show&redirect=NVIDIA#Debian_12_.22Bookworm.22)
 4.  [https://www.reddit.com/r/debian/comments/149jx0y/wayland\_not\_available\_in\_gdm\_after\_installing/](https://www.reddit.com/r/debian/comments/149jx0y/wayland_not_available_in_gdm_after_installing/)
