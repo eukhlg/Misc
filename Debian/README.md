@@ -211,6 +211,7 @@ sudo systemctl enable nvidia-hibernate.service
 sudo systemctl enable nvidia-resume.service
 ```
 
+> [!IMPORTANT]
 > In addition, you will need to verify whether the PreserveVideoMemoryAllocations NVIDIA module parameter is turned on. Without the parameter being > enabled, the udev rules in /usr/lib/udev/rules.d/61-gdm.rules will force a fallback to X11. To check the value of PreserveVideoMemoryAllocations:
 > ```
 > cat /proc/driver/nvidia/params | grep PreserveVideoMemoryAllocations
