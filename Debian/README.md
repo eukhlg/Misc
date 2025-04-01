@@ -1,5 +1,5 @@
 Gnome customization
-===========
+--------------------
 
 1.  Install Extension Manager
 2.  Install **Blur my Shell, Dash to Dock, User Themes** (if not installed)
