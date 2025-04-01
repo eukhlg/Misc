@@ -3,10 +3,8 @@
 1.  Install Extension Manager
 2.  Install **Blur my Shell, Dash to Dock, User Themes** (if not installed)
 3.  Install [**Flatpak**](https://flatpak.org/setup/Debian)  
-    
 4.  Restart
 5.  Download and install **GTK3 themes** from [https://github.com/lassekongo83/adw-gtk3](https://github.com/lassekongo83/adw-gtk3)  
-    
 6.  Install **GDM Settings** app from FlatHub and copy user's settings to GDM
 7.  Adjust Touchpad speed [https://ubuntuhandbook.org/index.php/2023/05/adjust-touchpad-scrolling-ubuntu/](https://ubuntuhandbook.org/index.php/2023/05/adjust-touchpad-scrolling-ubuntu/)
 
