@@ -1,4 +1,4 @@
-##Gnome customization
+## Gnome customization
 --------------------
 
 1.  Install Extension Manager
