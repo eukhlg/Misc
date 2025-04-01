@@ -227,8 +227,7 @@ sudo systemctl enable nvidia-resume.service
 > ln -s /dev/null /etc/udev/rules.d/61-gdm.rules
 > ```
 
-Software
---------
+## Software
 
 1.  Remove Debian's Mozila ESR
 2.  Remove Libre Office  
@@ -264,10 +263,9 @@ sudo apt install libavcodec-extra vlc
     cp /sys/kernel/btf/vmlinux /usr/lib/modules/`uname -r`/build/
     sudo vmware-modconfig --console --install-all
 
-References
+## References
 
 1.  [https://www.youtube.com/watch?v=dzyfSSPGOfM](https://www.youtube.com/watch?v=dzyfSSPGOfM)  
-    
 2.  [(3) Debian 12 - The First 12 Things You Should Do After Installation! - YouTube](https://www.youtube.com/watch?v=K72XJHurdUY&t=33s)
 3.  [https://wiki.debian.org/NvidiaGraphicsDrivers?action=show&redirect=NVIDIA#Debian\_12\_.22Bookworm.22](https://wiki.debian.org/NvidiaGraphicsDrivers?action=show&redirect=NVIDIA#Debian_12_.22Bookworm.22)
 4.  [https://www.reddit.com/r/debian/comments/149jx0y/wayland\_not\_available\_in\_gdm\_after\_installing/](https://www.reddit.com/r/debian/comments/149jx0y/wayland_not_available_in_gdm_after_installing/)
