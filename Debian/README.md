@@ -12,7 +12,7 @@
 
 1.  Enable QT apps auto scaling via setting environment variables
 
-```
+```bash
 sudo nano /etc/security/pam_env.conf
 QT_AUTO_SCREEN_SCALE_FACTOR=1
 QT_ENABLE_HIGHDPI_SCALING=1
@@ -21,7 +21,7 @@ QT_ENABLE_HIGHDPI_SCALING=1
     
 2.  Enable Wayland HiDPI support for all users  
       
-```    
+```bash
 # This is if GDM settings app is present are 
 sudo touch /etc/dconf/db/gdm.d/00-hidpi
 sudo vi 00-hidpi
@@ -33,7 +33,7 @@ sudo -u gdm dbus-launch gsettings set org.gnome.mutter experimental-features "['
     
 3.  Enable HiDPI for X11  
 
-```
+```bash
 gsettings set org.gnome.settings-daemon.plugins.xsettings overrides "[{'Gdk/WindowScalingFactor', <2>}]"
 vi ~/.config/autostart/xrandr-settings.desktop
 
@@ -49,7 +49,7 @@ Exec=xrandr --output eDP --scale 1.25x1.25
     
 4.  Flatpak  
       
-```    
+```bash
 STEAM_FORCE_DESKTOPUI_SCALING=1.5
 GDK_SCALE=1.5
 ELM_SCALE=1.5
@@ -62,14 +62,14 @@ QT_SCALE_FACTOR=2
 
 1. Add "contrib", "non-free" and "non-free-firmware" components to /etc/apt/sources.list, for example:
 
-```
+```bash
 # Debian Bookworm
 deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 ```
 
 2. Update the list of available packages, then we can install the nvidia-driver package, plus the necessary firmware:
 
-```
+```bash
 apt update
 apt install nvidia-driver firmware-misc-nonfree
 ```
@@ -84,7 +84,7 @@ DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms pa
 1. Download driver from here [https://download.nvidia.com/XFree86/Linux-x86_64/](https://download.nvidia.com/XFree86/Linux-x86_64/)
 The latest stable version can be found here [https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/](https://www.nvidia.com/Download/driverResults.aspx/216728/en-us/)
 
-```
+```bash
 apt autoremove $(dpkg -l nvidia-drivers* | grep ii |awk '{print $2}')
 apt install linux-headers-$(uname -r) gcc make acpid dkms libglvnd-core-dev libglvnd0 libglvnd-dev dracut
 touch /etc/modprobe.d/blacklist.conf
@@ -108,7 +108,7 @@ apt install xwayland libxcb1 libnvidia-egl-wayland1
 2.  Open a terminal and type: nano prime-run
 3.  Copy and paste this script into nano, then save and quit nano:  
 
-```
+```bash
 #!/bin/bash
 __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia "$@"
 ```
@@ -116,7 +116,7 @@ __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRA
     
 4.  In terminal type:
    
-```
+```bash
 sudo mv prime-run /bin
 cd /bin
 sudo chmod 755 prime-run
@@ -128,7 +128,7 @@ sudo chmod 755 prime-run
 
 ### AMDGPU issue on DMESG
 
-```
+```bash
 [    2.123808] amdgpu 0000:66:00.0: amdgpu: Fetched VBIOS from VFCT
 [    2.123809] amdgpu: ATOM BIOS: 113-PHXGENERIC-001
 [    2.123814] [drm] VCN(0) encode/decode are enabled in VM mode
@@ -144,7 +144,7 @@ sudo chmod 755 prime-run
 
 Solution is here [https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see](https://unix.stackexchange.com/questions/765130/ive-got-a-new-lenovo-yoga-pro-7-14aph8-and-after-grub-bootloader-screen-im-see)
 
-```
+```bash
 cd /tmp
 git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/
 cd linux-firmware
@@ -156,7 +156,7 @@ sudo update-initramfs -u #or sudo update-initramfs -k all -u -v
 
 #### Option 1
 
-```
+```bash
 nano /usr/lib/udev/rules.d/61-gdm.rules
 
 #just commented the last two lines here:
@@ -174,7 +174,7 @@ On GNOME desktops, although a proper version of the NVIDIA driver is used, the g
 
 To enable kernel mode-setting with the NVIDIA driver:
 
-```
+```bash
 touch /etc/default/grub.d/nvidia-modeset.cfg
 echo 'GRUB_CMDLINE_LINUX="$GRUB_CMDLINE_LINUX nvidia-drm.modeset=1"' > /etc/default/grub.d/nvidia-modeset.cfg
 update-grub
@@ -194,7 +194,7 @@ NVIDIA-Linux-x86_64-525.147.05.run --extract-only
     
 4.  Run the following commands to install the extracted scripts:
 
-```
+```bash
 TMPL_PATH=/path/to/the/extracted/directory/systemd
 sudo install --mode 644 "${TMPL_PATH}/system/nvidia-suspend.service" /etc/systemd/system
 sudo install --mode 644 "${TMPL_PATH}/system/nvidia-hibernate.service" /etc/systemd/system
@@ -232,7 +232,7 @@ sudo systemctl enable nvidia-resume.service
 1.  Remove Debian's Mozila ESR
 2.  Remove Libre Office  
       
-```
+```bash
 sudo apt remove libreoffice-common libreoffice-core libreoffice-gnome libreoffice-gtk3 libreoffice-help-common libreoffice-help-en-us libreoffice-style-colibre libreoffice-style-elementary
 ```
     
@@ -247,21 +247,23 @@ To enable Wayland support change the following option within `chrome://flags/` t
 
 Install codecs pack and VLC  
 
-```
+```bash
 sudo apt install libavcodec-extra vlc
 ```
 
 ### VMWare Player installation
 
-    apt install gcc
-    apt-get install gcc
-    apt-get install gcc
-    apt-get install make
-    apt install dwarves
-    apt-get update
-    ln -sf /usr/lib/modules/$(uname -r)/vmlinux.xz /boot/
-    cp /sys/kernel/btf/vmlinux /usr/lib/modules/`uname -r`/build/
-    sudo vmware-modconfig --console --install-all
+```bash
+apt install gcc
+apt-get install gcc
+apt-get install gcc
+apt-get install make
+apt install dwarves
+apt-get update
+ln -sf /usr/lib/modules/$(uname -r)/vmlinux.xz /boot/
+cp /sys/kernel/btf/vmlinux /usr/lib/modules/`uname -r`/build/
+sudo vmware-modconfig --console --install-all
+```
 
 ## References
 
