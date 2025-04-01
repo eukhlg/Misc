@@ -58,8 +58,7 @@ ELM_SCALE=1.5
 QT_SCALE_FACTOR=2
 ```
 
-Drivers installation
---------------------
+## Drivers installation
 
 ### NVIDIA Driver (debian repository)
 
@@ -127,8 +126,7 @@ sudo chmod 755 prime-run
     
 5.  Test it by typing `prime-run glxinfo | grep "OpenGL renderer"`
 
-Issues
-------
+## Issues
 
 ### AMDGPU issue on DMESG
 
