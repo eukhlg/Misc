@@ -76,7 +76,7 @@ apt install nvidia-driver firmware-misc-nonfree
 
 DKMS will build the nvidia module for your system, via the nvidia-kernel-dkms package.
 
-> [!NOTE]
+> [!WARNING]
 > Note about Secureboot : if you have SecureBoot enabled, you need to sign the resulting modules. Detailed instructions are available here.
 
 ### NVIDIA Driver (Offical Download)  
